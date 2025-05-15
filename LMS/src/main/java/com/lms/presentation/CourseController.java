@@ -29,7 +29,7 @@ public class CourseController {
     private final UserService userService;
     private final CourseService courseService;
 
-    // A REmoving the unUsed injection AuthenticationService
+    // A REmoving the unUsed injection AuthenticationServicee
 
     private ApplicationEventPublisher eventPublisher;
 
