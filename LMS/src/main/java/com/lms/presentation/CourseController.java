@@ -1,6 +1,7 @@
 package com.lms.presentation;
 
 import com.lms.events.CourseNotificationEvent;
+
 import com.lms.events.NotificationEvent;
 import com.lms.persistence.Course;
 import com.lms.persistence.Lesson;
@@ -27,12 +28,15 @@ import java.util.Optional;
 public class CourseController {
     private final UserService userService;
     private final CourseService courseService;
-    private final AuthenticationService authenticationService;
+
+    // A REmoving the unUsed injection AuthenticationService
+
     private ApplicationEventPublisher eventPublisher;
 
-    public CourseController(CourseService courseService, AuthenticationService auth, UserService user, ApplicationEventPublisher eventPublisher) {
+    public CourseController(CourseService courseService,/* AuthenticationService auth,*/ UserService user, ApplicationEventPublisher eventPublisher) {
         this.courseService = courseService;
-        this.authenticationService=auth;
+        // A REmoving the unUsed Constructor  injection AuthenticationService
+
         this.userService=user;
         this.eventPublisher = eventPublisher;
     }
