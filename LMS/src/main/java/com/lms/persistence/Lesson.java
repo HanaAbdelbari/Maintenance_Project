@@ -2,9 +2,8 @@ package com.lms.persistence;
 
 public class Lesson {
     private String  id;
-    //private Long CourseId;
     private String title;
-    private String content;  // URL or textual content
+    private String content;
 
     public Lesson(String id, String title, String content) {
         this.id = id;
