@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Scope("singleton")
+      //Replace all instances of .collect(Collectors.toList()) with .toList() in NotificationManager class
+       //Since Java 16, Stream.toList() is preferred because it returns an unmodifiable List
 public class NotificationManager {
     private final List<Notification> notifications = new ArrayList<>();
 
@@ -29,32 +31,32 @@ public class NotificationManager {
     public List<Notification> getReadNotifications() {
         return notifications.stream()
                 .filter(Notification::isRead)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Get unread notifications
     public List<Notification> getUnreadNotifications() {
         return notifications.stream()
                 .filter(notification -> !notification.isRead())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Notification> findByUserId(String userId) {
         return notifications.stream()
                 .filter(notification -> notification.getUserId() != null && notification.getUserId().equals(userId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Notification> findUnreadByUserId(String userId) {
         return notifications.stream()
                 .filter(notification -> notification.getUserId() != null && notification.getUserId().equals(userId) && !notification.isRead())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Notification> findReadByUserId(String userId) {
         return notifications.stream()
                 .filter(notification -> notification.getUserId() != null && notification.getUserId().equals(userId) && notification.isRead())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void markAsRead(String notificationId) {
@@ -65,12 +67,12 @@ public class NotificationManager {
     }
 
     /*
- Joseph
-    private void sendEmail(String userId, String subject, String body) {
-        // Replace this with actual email sending logic
-        System.out.println("Sending email to user " + userId);
-        System.out.println("Subject: " + subject);
-        System.out.println("Body: " + body);
-    }
-*/
+     Joseph
+        private void sendEmail(String userId, String subject, String body) {
+            // Replace this with actual email sending logic
+            System.out.println("Sending email to user " + userId);
+            System.out.println("Subject: " + subject);
+            System.out.println("Body: " + body);
+        }
+    */
 }

@@ -26,14 +26,10 @@ public class SmsService {
     public OtpResponseDto sendSMS(OtpRequest otpRequest, Optional<User> curr) {
         OtpResponseDto otpResponseDto = null;
         try {
-            PhoneNumber to = new PhoneNumber(otpRequest.getPhoneNumber());//to
-            PhoneNumber from = new PhoneNumber(twilioConfig.getPhoneNumber()); // from
+              //removing unused variables(phone num form and to and the unused message)
             String otp = generateOTP();
             String otpMessage = "Dear Customer , Your OTP is  " + otp + " for sending sms through Spring boot application. Thank You.";
-            Message message = Message
-                    .creator(to, from,
-                            otpMessage)
-                    .create();
+            //remove unused messege object
             otpMap.put(otpRequest.getUsername(), otp);
             lessonRequest.add(Pair.of(otpRequest.getLessonName(), curr));
             otpResponseDto = new OtpResponseDto(OtpStatus.DELIVERED, otpMessage);

@@ -54,7 +54,11 @@ public class NotificationEventListener {
             case "IN_APP":
                 sendInAppNotification(event);
                 break;
+                //add default case to handle other notification types
+            default:
+                System.out.println("Invalid notification type: " + event.getNotificationType());
         }
+
     }
 
     private void sendEmailNotification(NotificationEvent event) {
