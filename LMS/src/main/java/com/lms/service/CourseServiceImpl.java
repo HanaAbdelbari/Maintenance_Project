@@ -9,15 +9,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CourseServiceImpl implements CourseService {
     private final List<Course> courseList = new ArrayList<>();  // In-memory storage for courses
-    private final String mediaDirectory = "media/";  // Local directory for storing media
+          //Constant names should comply with a naming convention (from mediaDirectory to MEDIA_DIRECTORY)
+    private static final String MEDIA_DIRECTORY = "media/";  // Local directory for storing media
 
     public CourseServiceImpl() {
-        File directory = new File(mediaDirectory);
+        File directory = new File(MEDIA_DIRECTORY);
         if (!directory.exists()) {
             directory.mkdirs();  // Create directory if it doesn't exist
         }
@@ -32,20 +32,21 @@ public class CourseServiceImpl implements CourseService {
         courseList.add(course);
         return course;
     }
+          //improve this method by either propagating the specific IOException
     @Override
-    public void uploadMedia(String courseId, MultipartFile file) {
+    public void uploadMedia(String courseId, MultipartFile file) throws IOException {
         Course course = findCourseById(courseId);
         if (course != null) {
             try {
-                String filePath = mediaDirectory + file.getOriginalFilename();
+                String filePath = MEDIA_DIRECTORY + file.getOriginalFilename();
                 File destinationFile = new File(filePath);
                 file.transferTo(destinationFile);  // Save file to the local directory
                 course.addMedia(filePath);  // Add file path to the course's media list
             } catch (IOException e) {
-                throw new RuntimeException("Failed to upload media file", e);
+                throw new IOException("Failed to upload media file", e);
             }
         } else {
-            throw new RuntimeException("Course not found with ID: " + courseId);
+            throw new IOException("Course not found with ID: " + courseId);
         }
     }
 
