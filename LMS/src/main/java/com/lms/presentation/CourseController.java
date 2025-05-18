@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class CourseController {
     private final UserService userService;
     private final CourseService courseService;
 
-    // A REmoving the unUsed injection AuthenticationService
+    // A REmoving the unUsed injection AuthenticationServicee
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -42,43 +43,44 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createCourse(@RequestBody Course course) {
+    public String createCourse(@RequestBody Course course) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
 
 
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
+            return "Course could not be created no User Exists";
         }
         if (!"Instructor".equals(currentUser.get().getRole())) {
-            return ResponseEntity.status(403).body("Access Denied: Access Denied: you are unauthorized");
+            return  "Access Denied: Access Denied: you are unauthorized";
         }
         if(courseService.findCourseById(course.getId()) != null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Course Already Exists");
+            return  "Course Already Exists";
         }
 
         course.setProfid(currentUser.get().getId());
         Course newCourse = courseService.createCourse(course);
         String message = "Course " + course.getId() + " \"" + course.getTitle() + "\"" + " created successfully" ;
         eventPublisher.publishEvent(new NotificationEvent(this, currentUser.get().getId(), message, "EMAIL"));
-        return ResponseEntity.ok("Course " + newCourse.getId() + " created successfully!");
+        return  "Course " + newCourse.getId() + " created successfully!";
     }
 
     @PostMapping("/{courseId}/media")
-    public ResponseEntity<String> uploadMedia(@PathVariable String courseId, @RequestParam("file") MultipartFile file) {
+    public String uploadMedia(@PathVariable String courseId, @RequestParam("file") MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
+            return "Course could not be created no User Exists";
+
         }
         if (!"Instructor".equals(currentUser.get().getRole())) {
-            return ResponseEntity.status(403).body("Access Denied: Access Denied: you are unauthorized");
+            return  "Access Denied: Access Denied: you are unauthorized";
         }
         Course course = courseService.findCourseById(courseId);
         if (course == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found with ID: " + courseId);
+            return  "Course not found with ID: " + courseId;
         }
         String uploadDirectory = System.getProperty("user.dir") + "/Uploads";
         String filePath = uploadDirectory + File.separator + file.getOriginalFilename();
@@ -98,68 +100,69 @@ public class CourseController {
             String instructorMessage = "You updated course  " + courseId + " \"" + course.getTitle() + "\"" + " media successfully";
             eventPublisher.publishEvent(new NotificationEvent(this, currentUser.get().getId(), instructorMessage, "EMAIL"));
 
-            return ResponseEntity.ok("File uploaded successfully!");
+            return  "File uploaded successfully!";
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error in uploading file: " + e.getMessage());
+            return "Error in uploading file: " + e.getMessage();
         }
     }
 
 
     @GetMapping("/{courseId}/media")
-    public ResponseEntity<List<String>> getMediaForCourse(@PathVariable String courseId) {
+    public List<String> getMediaForCourse(@PathVariable String courseId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
 
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
+            List<String> Error = new ArrayList<>();
+            Error.add("Course could not be created no User Exists");
+            return Error;
+
+
         }
 
-        return ResponseEntity.ok(courseService.getMediaForCourse(courseId));
+        return courseService.getMediaForCourse(courseId);
     }
 
     @PostMapping("/{courseId}/lessons")
-    public ResponseEntity<String> addLessonToCourse(@PathVariable String courseId, @RequestBody Lesson lesson) {
+    public String addLessonToCourse(@PathVariable String courseId, @RequestBody Lesson lesson) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
         if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
+            return "Course could not be created no User Exists";
+
+
         }
         if (!"Instructor".equals(currentUser.get().getRole())) {
-            return ResponseEntity.status(403).body("Access Denied: Access Denied: you are unauthorized");
+            return  "Access Denied: Access Denied: you are unauthorized";
         }
         courseService.addLessonToCourse(courseId, lesson);
-        return ResponseEntity.ok("Lesson added successfully!");
+        return  "Lesson added successfully!";
     }
 
     @GetMapping("/{courseId}/lessons")
-    public ResponseEntity<List<Lesson>> getLessonsForCourse(@PathVariable String courseId) {
+    public List<Lesson> getLessonsForCourse(@PathVariable String courseId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
 
-        if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
-        }
-        return ResponseEntity.ok(courseService.getLessonsForCourse(courseId));
+
+        return  courseService.getLessonsForCourse(courseId);
     }
 
     @GetMapping("/availableCourses")
-    public ResponseEntity<?> getAllCourses() {
+    public List<Course> getAllCourses() {
         // Retrieve the currently authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
-        if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
-        }
+
 
         List<Course> courses = courseService.getAllCourses();
 
-        return ResponseEntity.ok(courses);
+        return courses;
     }
 
 }
