@@ -9,11 +9,15 @@ import com.lms.service.SmsService;
 import com.lms.service.impl.EmailService;
 import com.lms.service.impl.ServiceFacade;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import com.lms.service.NotificationServiceImpl;
 
 import java.util.Optional;
+
+import static org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.UiService.LOGGER;
 
 
 @Component
@@ -24,7 +28,8 @@ public class NotificationEventListener {
     private final SmsService smsService;
     private final ServiceFacade service;
     private final NotificationManager notificationManager;
-
+        //define a logger in this class
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationEventListener.class);
 
     @EventListener
     public void handleNotificationEvent(NotificationEvent event) {
@@ -32,11 +37,11 @@ public class NotificationEventListener {
         notification.setUserId(event.getUserId());
         notification.setMessage(event.getMessage());
         notificationManager.addNotification(notification);
-
-        System.out.println("Notification Event Received:");
-        System.out.println("User ID: " + event.getUserId());
-        System.out.println("Message: " + event.getMessage());
-        System.out.println("Notification Type: " + event.getNotificationType());
+            // Replace System.out.println with logger statements
+        LOGGER.info("Notification Event Received:");
+        LOGGER.info("User ID: {}", event.getUserId());
+        LOGGER.info("Message: {}", event.getMessage());
+        LOGGER.info("Notification Type: {}", event.getNotificationType());
 
         // Simulate notification sending
         switch (event.getNotificationType()) {
@@ -74,9 +79,8 @@ public class NotificationEventListener {
                 "+201014367954",
                 lessonName
         );
-        new Thread(() -> {
-            smsService.sendSMS(otpRequest, Optional.of(user));
-        }).start();
+          //Convert the lambda to use expression notation by removing the curly braces and semicolon.
+        new Thread(() -> smsService.sendSMS(otpRequest, Optional.of(user))).start();
         System.out.println("Sending SMS to student " + event.getUserId() + " for attendance otp of lesson : " + event.getMessage());
     }
 
