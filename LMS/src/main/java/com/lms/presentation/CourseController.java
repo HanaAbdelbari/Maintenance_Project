@@ -126,45 +126,41 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/lessons")
-    public ResponseEntity<String> addLessonToCourse(@PathVariable String courseId, @RequestBody Lesson lesson) {
+    public String addLessonToCourse(@PathVariable String courseId, @RequestBody Lesson lesson) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
-        if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
-        }
+
         if (!"Instructor".equals(currentUser.get().getRole())) {
-            return ResponseEntity.status(403).body("Access Denied: Access Denied: you are unauthorized");
+            return  "Access Denied: Access Denied: you are unauthorized";
         }
         courseService.addLessonToCourse(courseId, lesson);
-        return ResponseEntity.ok("Lesson added successfully!");
+        return  "Lesson added successfully!";
     }
 
     @GetMapping("/{courseId}/lessons")
-    public ResponseEntity<List<Lesson>> getLessonsForCourse(@PathVariable String courseId) {
+    public List<Lesson> getLessonsForCourse(@PathVariable String courseId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
 
-        if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
-        }
-        return ResponseEntity.ok(courseService.getLessonsForCourse(courseId));
+
+        return courseService.getLessonsForCourse(courseId);
     }
 
+    // Resolving the problem and making the api return a specific object not any type which violates
+    //Single Responsibility Principle (SRP)
     @GetMapping("/availableCourses")
-    public ResponseEntity<?> getAllCourses() {
+    public List<Course>  getAllCourses() {
         // Retrieve the currently authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUserDetails = (UserDetails) authentication.getPrincipal();
         Optional<User> currentUser = userService.findByEmail(currentUserDetails.getUsername());
-        if (currentUser.isEmpty()) {
-            return ResponseEntity.status(404).build();
-        }
+
 
         List<Course> courses = courseService.getAllCourses();
 
-        return ResponseEntity.ok(courses);
+        return  courses;
     }
 
 }

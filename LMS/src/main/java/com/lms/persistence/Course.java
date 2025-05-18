@@ -20,6 +20,10 @@ public class Course {
         this.Profid = profid;
     }
 
+    public Course() {
+
+    }
+
     public void addLesson(Lesson lesson) {
         this.lessons.add(lesson);
     }
