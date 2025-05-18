@@ -1,5 +1,7 @@
 package com.lms.presentation;
 
+
+
 import com.lms.events.CourseNotificationEvent;
 
 import com.lms.events.NotificationEvent;
@@ -124,6 +126,7 @@ public class CourseController {
 
         return courseService.getMediaForCourse(courseId);
     }
+
 
     @PostMapping("/{courseId}/lessons")
     public String addLessonToCourse(@PathVariable String courseId, @RequestBody Lesson lesson) {
