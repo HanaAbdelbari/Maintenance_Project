@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -276,7 +277,7 @@ class ServiceFacadeTest {
     }
 
     @Test
-    void testUploadMedia() {
+    void testUploadMedia() throws IOException {
         String courseId = "course1";
         MultipartFile mockFile = mock(MultipartFile.class);
 

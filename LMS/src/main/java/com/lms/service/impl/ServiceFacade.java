@@ -8,6 +8,8 @@ import com.lms.persistence.*;
 import com.lms.persistence.entities.*;
 import com.lms.persistence.entities.questions.*;
 import com.lms.service.*;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -219,7 +221,7 @@ public class ServiceFacade {
     return courseService.createCourse(course);
   }
 
-  public void uploadMedia(String courseId, MultipartFile file) {
+  public void uploadMedia(String courseId, MultipartFile file) throws IOException {
     courseService.uploadMedia(courseId, file);
   }
 
